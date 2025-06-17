@@ -38,12 +38,7 @@ app.get('/voucher', async (c) => {
     let discountReason = null
     
     if (user.fid) {
-      // Dev-only 90% discount for FID 977233
-      const isDev = c.env.HOSTNAME?.includes('localhost') || c.env.HOSTNAME?.includes('127.0.0.1') || c.env.HOSTNAME?.includes('ngrok')
-      if (isDev && user.fid === 977233) {
-        discountPercentage = 90
-        discountReason = 'Developer Testing'
-      } else if (OG_AUCTION_BIDDER_FIDS.includes(user.fid)) {
+      if (OG_AUCTION_BIDDER_FIDS.includes(user.fid)) {
         // OG Auction Bidder (10% discount)
         discountPercentage = 10
         discountReason = 'OG Auction Bidder'

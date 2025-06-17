@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
 import { TransactionItem } from '../components/TransactionItem';
-import { RedemptionRequestItem } from '../components/RedemptionRequestItem';
 
 export function HistoryPage() {
   const [activeTab, setActiveTab] = useState('purchases');
   const [purchases, setPurchases] = useState([]);
   const [redemptions, setRedemptions] = useState([]);
-  const [redemptionRequests, setRedemptionRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -17,15 +15,13 @@ export function HistoryPage() {
         setLoading(true);
         setError(null);
 
-        const [purchaseData, redemptionData, requestData] = await Promise.all([
+        const [purchaseData, redemptionData] = await Promise.all([
           api.getPurchaseHistory(),
-          api.getRedemptionHistory(),
-          api.getRedemptionRequests()
+          api.getRedemptionHistory()
         ]);
 
         setPurchases(purchaseData.purchases || []);
         setRedemptions(redemptionData.redemptions || []);
-        setRedemptionRequests(requestData.requests || []);
       } catch (err) {
         console.error('Failed to load history:', err);
         setError(err.message);
@@ -37,11 +33,7 @@ export function HistoryPage() {
     loadHistory();
   }, []);
 
-  const activeData = activeTab === 'purchases' 
-    ? purchases 
-    : activeTab === 'redemptions' 
-    ? redemptions 
-    : redemptionRequests;
+  const activeData = activeTab === 'purchases' ? purchases : redemptions;
 
   return (
     <div className="min-h-screen pb-16 bg-black">
@@ -58,7 +50,7 @@ export function HistoryPage() {
         <div className="flex bg-gray-900 border border-gray-800 rounded p-1 mb-6">
           <button
             onClick={() => setActiveTab('purchases')}
-            className={`flex-1 py-2 px-3 rounded transition-all font-mono text-sm ${
+            className={`flex-1 py-2 px-4 rounded transition-all font-mono ${
               activeTab === 'purchases'
                 ? 'bg-green-400 text-black'
                 : 'text-gray-400 hover:text-green-400'
@@ -68,23 +60,13 @@ export function HistoryPage() {
           </button>
           <button
             onClick={() => setActiveTab('redemptions')}
-            className={`flex-1 py-2 px-3 rounded transition-all font-mono text-sm ${
+            className={`flex-1 py-2 px-4 rounded transition-all font-mono ${
               activeTab === 'redemptions'
                 ? 'bg-green-400 text-black'
                 : 'text-gray-400 hover:text-green-400'
             }`}
           >
             [ REDEMPTIONS ]
-          </button>
-          <button
-            onClick={() => setActiveTab('requests')}
-            className={`flex-1 py-2 px-3 rounded transition-all font-mono text-sm ${
-              activeTab === 'requests'
-                ? 'bg-green-400 text-black'
-                : 'text-gray-400 hover:text-green-400'
-            }`}
-          >
-            [ REQUESTS ]
           </button>
         </div>
 
@@ -126,19 +108,12 @@ export function HistoryPage() {
 
         {!loading && !error && activeData.length > 0 && (
           <div className="space-y-4">
-            {activeData.map((item, index) => (
-              activeTab === 'requests' ? (
-                <RedemptionRequestItem
-                  key={item.id || index}
-                  request={item}
-                />
-              ) : (
-                <TransactionItem
-                  key={item.id || index}
-                  transaction={item}
-                  type={activeTab === 'purchases' ? 'purchase' : 'redemption'}
-                />
-              )
+            {activeData.map((transaction, index) => (
+              <TransactionItem
+                key={transaction.id || index}
+                transaction={transaction}
+                type={activeTab === 'purchases' ? 'purchase' : 'redemption'}
+              />
             ))}
           </div>
         )}
