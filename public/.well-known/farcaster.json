@@ -1,0 +1,17 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjk3NzIzMywidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweGE2N0JhMDI4MTIzMWVCOUUyZWE0Y0Y5Nzg5NGMwYjBiNUI4MDFDYzYifQ",
+    "payload": "eyJkb21haW4iOiJ0b2tlbi5rYXNyYS5jb2RlcyJ9",
+    "signature": "MHg4ZjY1Yjg5YjlmY2RhYWJhNTY1N2U3NjAzMjRmZmM3MGNjYjg2YTA4Y2E0YzlhZDExMTU1ODQ2YTc5MzIzZTUxMjdlNGI2ZmI0N2Q2NTA0MjFhYzIxMmFjZjMzNzRkNGQ4ZDNhNzNhZjQ2ZTM4NzcxODYyM2I4OGNkMTJlNWIyNTFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "JC4P Dev Hours",
+    "iconUrl": "https://cover-art.kasra.codes/jc4p_token_square.png",
+    "homeUrl": "https://token.kasra.codes",
+    "imageUrl": "https://cover-art.kasra.codes/jc4p_token_rectangle.png",
+    "buttonTitle": "Get Help From JC4P",
+    "splashImageUrl": "https://cover-art.kasra.codes/jc4p_token_square.png",
+    "splashBackgroundColor": "#002C12"
+  }
+}
