@@ -14,9 +14,9 @@ export default async function authMiddleware(c, next) {
     const token = authorization.split(' ')[1]
     
     // Get hostname from request headers
-    const url = new URL(c.req.url)
-    const domain = c.req.header('host') || url.host
-    // const domain = 'kasra.ngrok.app'
+    // const url = new URL(c.req.url)
+    // const domain = c.req.header('host') || url.host
+    const domain = 'token.kasra.codes'
     
     const payload = await client.verifyJwt({
       token,
