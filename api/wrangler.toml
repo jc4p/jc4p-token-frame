@@ -1,0 +1,36 @@
+name = "jc4p-dev-hours-api"
+main = "src/index.js"
+compatibility_date = "2024-01-01"
+
+[observability]
+enabled = true
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "jc4p-dev-hours-db"
+database_id = "9b36443f-a619-4255-8e9c-7ae4e3de92b0"
+
+# KV namespace for nonce tracking
+[[kv_namespaces]]
+binding = "NONCE_KV"
+id = "a6032a4cad1343d1ac5657db28ceffed"
+preview_id = "a6032a4cad1343d1ac5657db28ceffed"
+
+# Environment Variables
+[vars]
+CONTRACT_ADDRESS = "0xf20b196c483385badf308a5ce1be2492c95ab166"
+USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"
+CHAIN_ID = "8453"
+HOSTNAME = "localhost:8787"
+SIGNER_ADDRESS = "0xD084221eC800eD783DC28e4c8A8f836F1f3626b8"
+ADMIN_KEY = "development-only-change-in-production"
+
+# Secrets (set these with wrangler secret put)
+# - ALCHEMY_RPC_URL
+# - SIGNER_PRIVATE_KEY
+
+# Cron trigger for blockchain sync
+# Runs every 5 minutes
+[triggers]
+crons = ["*/5 * * * *"]

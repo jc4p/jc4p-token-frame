@@ -1,0 +1,28 @@
+{
+  "name": "dev-hours-token-api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.8.19",
+    "vitest": "~3.2.0",
+    "wrangler": "^4.20.0",
+    "@types/bun": "latest"
+  },
+  "module": "src/index.js",
+  "type": "module",
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@cloudflare/workers-types": "^4.20250614.0",
+    "@farcaster/quick-auth": "^0.0.6",
+    "hono": "^4.7.11",
+    "viem": "^2.31.3"
+  }
+}
