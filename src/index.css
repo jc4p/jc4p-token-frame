@@ -84,31 +84,31 @@ input[type="range"].slider::-moz-range-track {
 input[type="range"].slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  background: #00ff00; /* terminal-green */
+  background: #10b981; /* green-500 - a muted green that matches better */
   height: 1.25rem;
   width: 1.25rem;
   border-radius: 50%;
   margin-top: -0.375rem;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
   transition: all 0.2s;
 }
 
 input[type="range"].slider::-moz-range-thumb {
-  background: #00ff00; /* terminal-green */
+  background: #10b981; /* green-500 - a muted green that matches better */
   height: 1.25rem;
   width: 1.25rem;
   border-radius: 50%;
   border: 0;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
   transition: all 0.2s;
 }
 
 input[type="range"].slider:hover::-webkit-slider-thumb {
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
 }
 
 input[type="range"].slider:hover::-moz-range-thumb {
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
 }
 
 input[type="range"].slider:disabled {
