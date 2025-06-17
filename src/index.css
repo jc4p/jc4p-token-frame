@@ -65,20 +65,30 @@ body {
 input[type="range"].slider {
   -webkit-appearance: none;
   appearance: none;
-  background: transparent;
+  background: transparent !important;
   cursor: pointer;
 }
 
+/* Override any conflicting styles */
+input.slider {
+  background: transparent !important;
+}
+
 input[type="range"].slider::-webkit-slider-track {
-  background: rgba(16, 185, 129, 0.2); /* green-500 with 20% opacity */
+  background: rgba(16, 185, 129, 0.2) !important; /* green-500 with 20% opacity */
   height: 0.5rem;
   border-radius: 0.5rem;
 }
 
 input[type="range"].slider::-moz-range-track {
-  background: rgba(16, 185, 129, 0.2); /* green-500 with 20% opacity */
+  background: rgba(16, 185, 129, 0.2) !important; /* green-500 with 20% opacity */
   height: 0.5rem;
   border-radius: 0.5rem;
+}
+
+/* Additional specificity for webkit */
+input.slider::-webkit-slider-track {
+  background: rgba(16, 185, 129, 0.2) !important;
 }
 
 input[type="range"].slider::-webkit-slider-thumb {
