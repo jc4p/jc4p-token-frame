@@ -70,13 +70,13 @@ input[type="range"].slider {
 }
 
 input[type="range"].slider::-webkit-slider-track {
-  background: #374151; /* gray-700 */
+  background: rgba(16, 185, 129, 0.2); /* green-500 with 20% opacity */
   height: 0.5rem;
   border-radius: 0.5rem;
 }
 
 input[type="range"].slider::-moz-range-track {
-  background: #374151; /* gray-700 */
+  background: rgba(16, 185, 129, 0.2); /* green-500 with 20% opacity */
   height: 0.5rem;
   border-radius: 0.5rem;
 }

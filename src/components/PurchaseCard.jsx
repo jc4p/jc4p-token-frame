@@ -163,7 +163,7 @@ export function PurchaseCard({ onPurchaseComplete, remainingSupply = 50, discoun
               setQuantity(value);
               setCustomQuantity(value.toString());
             }}
-            className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+            className="w-full h-2 rounded-lg appearance-none cursor-pointer slider"
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>1</span>

@@ -77,7 +77,7 @@ export function RedeemForm({ balance, weeklyCapacity, onRedeemComplete }) {
           value={quantity}
           onChange={(e) => setQuantity(parseInt(e.target.value))}
           disabled={maxRedeemable === 0}
-          className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-2 rounded-lg appearance-none cursor-pointer slider disabled:opacity-50 disabled:cursor-not-allowed"
         />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>1</span>
