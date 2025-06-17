@@ -100,7 +100,7 @@ export function HomePage() {
         </div>
 
         {/* Value Proposition */}
-        <div className="text-center py-4 space-y-2">
+        <div className="text-left py-4 space-y-2">
           <p className="text-gray-300 font-mono">
             &gt; Immediate direct access to @jc4p for consulting, one-on-one training, MVP development, data analysis, whatever you want (unless it's illegal in USA)
           </p>
