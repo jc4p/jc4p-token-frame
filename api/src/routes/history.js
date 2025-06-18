@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
-import { getPurchaseHistory, getRedemptionHistory, getGlobalActivity } from '../services/database.js'
+import { getPurchaseHistoryMultiAddress, getRedemptionHistoryMultiAddress, getGlobalActivity } from '../services/database.js'
+import { fetchUsersByFids } from '../services/neynar.js'
 
 const app = new Hono()
 
@@ -10,9 +11,9 @@ app.get('/history/purchases', async (c) => {
   const offset = parseInt(c.req.query('offset') || '0')
   
   try {
-    const result = await getPurchaseHistory(
+    const result = await getPurchaseHistoryMultiAddress(
       c.env.DB,
-      user.primaryAddress,
+      user.addresses || [],
       user.fid,
       limit,
       offset
@@ -22,7 +23,8 @@ app.get('/history/purchases', async (c) => {
       ...result,
       user: {
         fid: user.fid,
-        address: user.primaryAddress
+        address: user.primaryAddress,
+        addresses: user.addresses || []
       }
     })
   } catch (error) {
@@ -38,7 +40,8 @@ app.get('/history/purchases', async (c) => {
       },
       user: {
         fid: user.fid,
-        address: user.primaryAddress
+        address: user.primaryAddress,
+        addresses: user.addresses || []
       }
     })
   }
@@ -51,9 +54,9 @@ app.get('/history/redemptions', async (c) => {
   const offset = parseInt(c.req.query('offset') || '0')
   
   try {
-    const result = await getRedemptionHistory(
+    const result = await getRedemptionHistoryMultiAddress(
       c.env.DB,
-      user.primaryAddress,
+      user.addresses || [],
       user.fid,
       limit,
       offset
@@ -63,7 +66,8 @@ app.get('/history/redemptions', async (c) => {
       ...result,
       user: {
         fid: user.fid,
-        address: user.primaryAddress
+        address: user.primaryAddress,
+        addresses: user.addresses || []
       }
     })
   } catch (error) {
@@ -79,7 +83,8 @@ app.get('/history/redemptions', async (c) => {
       },
       user: {
         fid: user.fid,
-        address: user.primaryAddress
+        address: user.primaryAddress,
+        addresses: user.addresses || []
       }
     })
   }
@@ -97,7 +102,42 @@ app.get('/history/global', async (c) => {
       offset
     )
     
-    return c.json(result)
+    // Extract unique FIDs from activities
+    const fids = [...new Set(result.activities
+      .filter(activity => activity.fid)
+      .map(activity => activity.fid))]
+    
+    // If we have FIDs, fetch user data from Neynar
+    let userMap = {}
+    if (fids.length > 0) {
+      try {
+        const users = await fetchUsersByFids(c.env, fids)
+        // Create a map of FID to user data
+        userMap = users.reduce((acc, user) => {
+          acc[user.fid] = {
+            username: user.username,
+            displayName: user.display_name,
+            pfpUrl: user.pfp_url,
+            verifiedAddresses: user.verified_addresses?.eth_addresses || []
+          }
+          return acc
+        }, {})
+      } catch (error) {
+        console.error('Error fetching user data from Neynar:', error)
+        // Continue without user data if Neynar fails
+      }
+    }
+    
+    // Enrich activities with user data
+    const enrichedActivities = result.activities.map(activity => ({
+      ...activity,
+      user: activity.fid ? userMap[activity.fid] || null : null
+    }))
+    
+    return c.json({
+      ...result,
+      activities: enrichedActivities
+    })
   } catch (error) {
     console.error('Error fetching global activity:', error)
     // Fallback to empty response if DB not available
@@ -167,6 +207,12 @@ Global activity response:
       "discount": {
         "percentage": 10,
         "reason": "OG Auction Bidder"
+      },
+      "user": {
+        "username": "dwr",
+        "displayName": "Dan Romero",
+        "pfpUrl": "https://...",
+        "verifiedAddresses": ["0x..."]
       }
     },
     {
@@ -178,7 +224,13 @@ Global activity response:
       "fid": 1237,
       "qty": 1,
       "workCID": "ipfs://QmWorkSpecificationHash",
-      "status": "pending"
+      "status": "pending",
+      "user": {
+        "username": "v",
+        "displayName": "V",
+        "pfpUrl": "https://...",
+        "verifiedAddresses": ["0x..."]
+      }
     }
   ],
   "pagination": { ... }

@@ -48,8 +48,11 @@ app.notFound((c) => {
   return c.json({ error: 'Not found' }, 404)
 })
 
-// Export for HTTP requests
-export default app
-
 // Export scheduled handler for cron jobs
-export { default as scheduled } from './scheduled.js'
+import scheduledHandler from './scheduled.js'
+
+// Export for Cloudflare Workers - must include both fetch and scheduled
+export default {
+  fetch: app.fetch,
+  scheduled: scheduledHandler.scheduled
+}

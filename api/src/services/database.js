@@ -68,17 +68,19 @@ export async function saveRedemption(db, redemption) {
   ).run()
 }
 
-export async function getPurchaseHistory(db, address, fid, limit = 50, offset = 0) {
+export async function getPurchaseHistoryMultiAddress(db, addresses, fid, limit = 50, offset = 0) {
   try {
     let whereClause = ''
     const params = []
     
-    if (address && fid) {
-      whereClause = 'WHERE buyer = ? OR fid = ?'
-      params.push(address.toLowerCase(), fid)
-    } else if (address) {
-      whereClause = 'WHERE buyer = ?'
-      params.push(address.toLowerCase())
+    if (addresses && addresses.length > 0 && fid) {
+      const addressPlaceholders = addresses.map(() => '?').join(', ')
+      whereClause = `WHERE buyer IN (${addressPlaceholders}) OR fid = ?`
+      params.push(...addresses.map(addr => addr.toLowerCase()), fid)
+    } else if (addresses && addresses.length > 0) {
+      const addressPlaceholders = addresses.map(() => '?').join(', ')
+      whereClause = `WHERE buyer IN (${addressPlaceholders})`
+      params.push(...addresses.map(addr => addr.toLowerCase()))
     } else if (fid) {
       whereClause = 'WHERE fid = ?'
       params.push(fid)
@@ -110,22 +112,29 @@ export async function getPurchaseHistory(db, address, fid, limit = 50, offset = 
       }
     }
   } catch (error) {
-    console.error('Database error in getPurchaseHistory:', error)
+    console.error('Database error in getPurchaseHistoryMultiAddress:', error)
     throw error
   }
 }
 
-export async function getRedemptionHistory(db, address, fid, limit = 50, offset = 0) {
+// Keep the old function for backward compatibility
+export async function getPurchaseHistory(db, address, fid, limit = 50, offset = 0) {
+  return getPurchaseHistoryMultiAddress(db, address ? [address] : [], fid, limit, offset)
+}
+
+export async function getRedemptionHistoryMultiAddress(db, addresses, fid, limit = 50, offset = 0) {
   try {
     let whereClause = ''
     const params = []
     
-    if (address && fid) {
-      whereClause = 'WHERE user_address = ? OR fid = ?'
-      params.push(address.toLowerCase(), fid)
-    } else if (address) {
-      whereClause = 'WHERE user_address = ?'
-      params.push(address.toLowerCase())
+    if (addresses && addresses.length > 0 && fid) {
+      const addressPlaceholders = addresses.map(() => '?').join(', ')
+      whereClause = `WHERE user_address IN (${addressPlaceholders}) OR fid = ?`
+      params.push(...addresses.map(addr => addr.toLowerCase()), fid)
+    } else if (addresses && addresses.length > 0) {
+      const addressPlaceholders = addresses.map(() => '?').join(', ')
+      whereClause = `WHERE user_address IN (${addressPlaceholders})`
+      params.push(...addresses.map(addr => addr.toLowerCase()))
     } else if (fid) {
       whereClause = 'WHERE fid = ?'
       params.push(fid)
@@ -157,9 +166,14 @@ export async function getRedemptionHistory(db, address, fid, limit = 50, offset 
       }
     }
   } catch (error) {
-    console.error('Database error in getRedemptionHistory:', error)
+    console.error('Database error in getRedemptionHistoryMultiAddress:', error)
     throw error
   }
+}
+
+// Keep the old function for backward compatibility
+export async function getRedemptionHistory(db, address, fid, limit = 50, offset = 0) {
+  return getRedemptionHistoryMultiAddress(db, address ? [address] : [], fid, limit, offset)
 }
 
 export async function getGlobalActivity(db, limit = 20, offset = 0) {

@@ -1,6 +1,6 @@
 import { Errors, createClient } from '@farcaster/quick-auth'
 import { HTTPException } from 'hono/http-exception'
-import { getUserPrimaryAddress } from '../services/neynar.js'
+import { getUserAddresses } from '../services/neynar.js'
 
 const client = createClient()
 
@@ -26,12 +26,13 @@ export default async function authMiddleware(c, next) {
     // Set the fid from the token
     const fid = payload.sub
     
-    // Fetch primary address from Neynar
-    const primaryAddress = await getUserPrimaryAddress(c.env, fid)
+    // Fetch all addresses from Neynar
+    const addresses = await getUserAddresses(c.env, fid)
     
     c.set('user', {
       fid,
-      primaryAddress
+      primaryAddress: addresses.primary,
+      addresses: addresses.all
     })
   } catch (e) {
     if (e instanceof Errors.InvalidTokenError) {

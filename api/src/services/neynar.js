@@ -44,21 +44,39 @@ export async function checkMutualFollow(env, fid1, fid2) {
   }
 }
 
-export async function getUserPrimaryAddress(env, fid) {
+export async function getUserAddresses(env, fid) {
   try {
     const users = await fetchUsersByFids(env, [fid])
     if (users.length === 0) {
-      return null
+      return { primary: null, all: [] }
     }
     
     const user = users[0]
-    // Return the primary ETH address if available
-    return user.verified_addresses?.primary?.eth_address || 
-           (user.verified_addresses?.eth_addresses?.[0]) || 
-           user.custody_address || 
-           null
+    // Get all verified ETH addresses
+    const verifiedAddresses = user.verified_addresses?.eth_addresses || []
+    const custodyAddress = user.custody_address
+    
+    // Combine all addresses, removing duplicates
+    const allAddresses = [...new Set([
+      ...verifiedAddresses,
+      ...(custodyAddress ? [custodyAddress] : [])
+    ])].filter(Boolean)
+    
+    // Primary is the first verified address, or custody if no verified
+    const primary = verifiedAddresses[0] || custodyAddress || null
+    
+    return {
+      primary,
+      all: allAddresses
+    }
   } catch (error) {
-    console.error('Error fetching user primary address:', error)
-    return null
+    console.error('Error fetching user addresses:', error)
+    return { primary: null, all: [] }
   }
+}
+
+// Keep the old function for backward compatibility but have it use the new one
+export async function getUserPrimaryAddress(env, fid) {
+  const { primary } = await getUserAddresses(env, fid)
+  return primary
 }

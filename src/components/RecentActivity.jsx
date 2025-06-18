@@ -45,11 +45,16 @@ export function RecentActivity() {
 
   // Helper to format address/username
   const formatUser = (activity) => {
+    // Check for user object from Neynar
+    if (activity.user?.username) {
+      return activity.user.username;
+    }
+    // Legacy fields
     if (activity.username) {
       return activity.username;
     }
     // Truncate address to 0x42...a8f9 format
-    const addr = activity.buyer || activity.user;
+    const addr = activity.address || activity.buyer || activity.user;
     if (addr) {
       return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
     }

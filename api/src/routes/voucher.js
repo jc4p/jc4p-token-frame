@@ -22,10 +22,13 @@ app.get('/voucher', async (c) => {
     return c.json({ error: 'Invalid buyer address' }, 400)
   }
   
-  // Verify the buyer matches the authenticated user
+  // Verify the buyer matches any of the authenticated user's addresses
   const user = c.get('user')
-  if (user.primaryAddress && user.primaryAddress.toLowerCase() !== buyer.toLowerCase()) {
-    return c.json({ error: 'Buyer address does not match authenticated user' }, 403)
+  const buyerLower = buyer.toLowerCase()
+  const userAddresses = user.addresses || []
+  
+  if (userAddresses.length > 0 && !userAddresses.some(addr => addr.toLowerCase() === buyerLower)) {
+    return c.json({ error: 'Buyer address does not match any of your verified addresses' }, 403)
   }
 
   try {

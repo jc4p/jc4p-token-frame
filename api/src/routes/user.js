@@ -9,6 +9,7 @@ app.get('/me', (c) => {
   return c.json({
     fid: user.fid,
     address: user.primaryAddress,
+    addresses: user.addresses || [],
   })
 })
 

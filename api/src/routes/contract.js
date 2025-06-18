@@ -25,6 +25,7 @@ app.get('/contract/info', async (c) => {
       user: {
         fid: user.fid,
         address: user.primaryAddress,
+        addresses: user.addresses || [],
         balance,
         nonce,
       },
