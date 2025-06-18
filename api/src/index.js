@@ -8,6 +8,7 @@ import historyRoutes from './routes/history.js'
 import adminRoutes from './routes/admin.js'
 import redemptionRoutes from './routes/redemption.js'
 import contractRoutes from './routes/contract.js'
+import transactionRoutes from './routes/transaction.js'
 
 const app = new Hono()
 
@@ -36,6 +37,7 @@ app.route('/api', historyRoutes)
 app.route('/api', adminRoutes)
 app.route('/api', redemptionRoutes)
 app.route('/api', contractRoutes)
+app.route('/api', transactionRoutes)
 
 // Error handler
 app.onError((err, c) => {

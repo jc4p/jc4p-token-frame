@@ -110,5 +110,18 @@ export const api = {
       throw new Error(data.error.message);
     }
     return data.result;
+  },
+
+  async verifyTransaction(txHash) {
+    const response = await fetchWithAuth('/api/transaction/verify', {
+      method: 'POST',
+      body: JSON.stringify({ txHash })
+    });
+    return response.json();
+  },
+
+  async getTransaction(txHash) {
+    const response = await fetchWithAuth(`/api/transaction/${txHash}`);
+    return response.json();
   }
 };

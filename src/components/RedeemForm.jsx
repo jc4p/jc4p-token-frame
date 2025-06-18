@@ -41,6 +41,18 @@ export function RedeemForm({ balance, weeklyCapacity, onRedeemComplete }) {
       setStatus('SUCCESS: Redemption confirmed!');
       console.log('Redemption transaction:', txHash);
 
+      // Verify the transaction
+      setStatus('> Verifying transaction...');
+      try {
+        const verificationResult = await api.verifyTransaction(txHash);
+        console.log('Transaction verified:', verificationResult);
+        setStatus('SUCCESS: Redemption verified and saved!');
+      } catch (verifyError) {
+        console.error('Transaction verification failed:', verifyError);
+        // Transaction succeeded but verification failed - not critical
+        setStatus('SUCCESS: Redemption confirmed! (verification pending)');
+      }
+
       // Call the callback to refresh data
       if (onRedeemComplete) {
         await onRedeemComplete();

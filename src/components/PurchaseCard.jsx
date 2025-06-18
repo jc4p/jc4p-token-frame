@@ -78,6 +78,18 @@ export function PurchaseCard({ onPurchaseComplete, remainingSupply = 50, discoun
       setStatus('SUCCESS: Purchase confirmed!');
       console.log('Purchase transaction:', txHash);
 
+      // Verify the transaction
+      setStatus('> Verifying transaction...');
+      try {
+        const verificationResult = await api.verifyTransaction(txHash);
+        console.log('Transaction verified:', verificationResult);
+        setStatus('SUCCESS: Purchase verified and saved!');
+      } catch (verifyError) {
+        console.error('Transaction verification failed:', verifyError);
+        // Transaction succeeded but verification failed - not critical
+        setStatus('SUCCESS: Purchase confirmed! (verification pending)');
+      }
+
       // Call the callback to refresh data
       if (onPurchaseComplete) {
         await onPurchaseComplete();

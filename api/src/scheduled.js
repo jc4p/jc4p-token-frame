@@ -75,18 +75,46 @@ async function syncBlockchainEvents(env) {
       ).bind(event.transactionHash).first()
       
       if (!existing) {
+        // Get the full transaction to decode input data
+        const tx = await client.getTransaction({ hash: event.transactionHash })
+        
+        let fid = null
+        let discountPercentage = 0
+        let discountReason = null
+        
+        // Try to decode transaction input to get FID and discount info
+        try {
+          // Define the function signature for buyWithVoucherAndPermit
+          const functionAbi = parseAbi([
+            'function buyWithVoucherAndPermit(tuple(address buyer, uint256 qty, uint256 price, uint256 nonce, uint256 fid) v, bytes vSig, tuple(address owner, address spender, uint256 value, uint256 nonce, uint256 deadline, uint8 v, bytes32 r, bytes32 s) p)'
+          ])
+          
+          // Decode the function data
+          const decoded = client.decodeFunctionData({
+            abi: functionAbi,
+            data: tx.input
+          })
+          
+          if (decoded && decoded.functionName === 'buyWithVoucherAndPermit' && decoded.args) {
+            // Extract FID from the voucher tuple
+            fid = decoded.args[0].fid ? Number(decoded.args[0].fid) : null
+          }
+        } catch (decodeError) {
+          console.warn(`Could not decode tx input for ${event.transactionHash}:`, decodeError.message)
+        }
+        
         await savePurchase(env.DB, {
           txHash: event.transactionHash,
           blockNumber: Number(event.blockNumber),
           timestamp: new Date(Number(block.timestamp) * 1000).toISOString(),
           buyer: event.args.buyer,
+          fid: fid,
           qty: Number(event.args.qty),
           price: event.args.price.toString(),
-          // Note: We don't have discount info from events, would need to decode tx input
-          discountPercentage: 0,
-          discountReason: null
+          discountPercentage: discountPercentage,
+          discountReason: discountReason
         })
-        console.log(`Saved purchase: ${event.transactionHash}`)
+        console.log(`Saved purchase: ${event.transactionHash} with FID: ${fid}`)
       }
     } catch (error) {
       console.error(`Failed to process purchase event ${event.transactionHash}:`, error)
@@ -104,11 +132,38 @@ async function syncBlockchainEvents(env) {
       ).bind(event.transactionHash).first()
       
       if (!existing) {
+        // Get the full transaction to decode input data
+        const tx = await client.getTransaction({ hash: event.transactionHash })
+        
+        let fid = null
+        
+        // Try to decode transaction input to get FID
+        try {
+          // Define the function signature for redeemWithPermit
+          const functionAbi = parseAbi([
+            'function redeemWithPermit(uint256 qty, uint256 fid, string workCID, tuple(address owner, address spender, uint256 value, uint256 nonce, uint256 deadline, uint8 v, bytes32 r, bytes32 s) p)'
+          ])
+          
+          // Decode the function data
+          const decoded = client.decodeFunctionData({
+            abi: functionAbi,
+            data: tx.input
+          })
+          
+          if (decoded && decoded.functionName === 'redeemWithPermit' && decoded.args) {
+            // Extract FID from the arguments
+            fid = decoded.args[1] ? Number(decoded.args[1]) : null
+          }
+        } catch (decodeError) {
+          console.warn(`Could not decode tx input for ${event.transactionHash}:`, decodeError.message)
+        }
+        
         await saveRedemption(env.DB, {
           txHash: event.transactionHash,
           blockNumber: Number(event.blockNumber),
           timestamp: new Date(Number(block.timestamp) * 1000).toISOString(),
           userAddress: event.args.user,
+          fid: fid,
           qty: Number(event.args.qty),
           workCID: event.args.workCID,
           status: 'pending'
@@ -122,7 +177,7 @@ async function syncBlockchainEvents(env) {
           ).bind(event.transactionHash, 'completed', event.args.workCID).run()
         }
         
-        console.log(`Saved redemption: ${event.transactionHash}`)
+        console.log(`Saved redemption: ${event.transactionHash} with FID: ${fid}`)
       }
     } catch (error) {
       console.error(`Failed to process redemption event ${event.transactionHash}:`, error)
